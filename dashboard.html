@@ -1,13 +1,13 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Dashboard | Wealth Traders</title><link rel="stylesheet" href="style.css"></head><body><div class="topbar"><div>▥ <span>98% Reported Success Rate</span></div><div>♢ <span>Trusted by 10,000+ Traders Worldwide</span></div><div>◯ <span>24/7 Support</span></div></div><header><div class="container nav">
-<a class="logo" href="index.html" aria-label="Crypto Wealth Traders home"><img src="cwt-logo.jpg" alt="CWT Crypto Wealth Traders logo"></a>
-<div class="mobile" onclick="menu()">☰</div>
-<nav>
-<a href="index.html">Home</a><a href="about.html">About</a><a href="investment.html">Investment</a>
-<a href="vip.html">VIP</a><a href="dashboard.html">Dashboard</a><a href="testimonials.html">Testimonials</a>
-<a href="faq.html">FAQ</a><a href="contact.html">Contact</a><a class="login-link" href="login.html">♙ Login</a>
-<a class="btn gold" href="signup.html">Sign Up</a>
-</nav></div></header><section><div class="container"><div class="head"><h1>Member Dashboard</h1><p>Your account, investment and VIP membership overview.</p></div><div class="card">
-<p>Welcome, <strong id="dashName">Guest</strong></p><div class="statgrid" style="margin-top:22px">
-<div class="stat"><small>Status</small><strong id="dashStatus">Guest</strong></div><div class="stat"><small>Investment</small><strong id="dashPlan">None</strong></div><div class="stat"><small>Target</small><strong id="dashTarget">None</strong></div><div class="stat"><small>VIP</small><strong id="dashVip">None</strong></div></div>
-<div style="margin-top:28px"><p><b>Email:</b> <span id="dashEmail">Not registered</span></p><p><b>Mobile:</b> <span id="dashPhone">Not registered</span></p></div>
-</div><div style="margin-top:24px"><button class="btn gold" onclick="logout()">Log Out</button></div></div></section><footer><div class="container"><p>© 2026 Wealth Traders. All Rights Reserved.</p><p style="margin-top:7px">Trading and investment involve financial risk. Historical or reported performance does not determine future results.</p></div></footer><script src="script.js"></script><script>window.addEventListener("load",loadDash)</script></body></html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard | Wealth Traders</title><link rel="stylesheet" href="style.css"></head><body>
+<div class="topbar"><div>▥ Market information</div><div>♢ Risk-aware trading tools</div><div>◯ Support available</div></div>
+<header><div class="container nav"><a class="logo" href="index.html"><img src="cwt-logo.jpg" alt="CWT Crypto Wealth Traders logo"></a><div class="mobile" onclick="menu()">☰</div>
+<nav><a href="index.html">Home</a><a href="about.html">About</a><a href="investment.html">Investment</a><a href="vip.html">VIP</a><a href="dashboard.html">Dashboard</a><a href="testimonials.html">Testimonials</a><a href="faq.html">FAQ</a><a href="contact.html">Contact</a><a class="login-link" href="login.html">Login</a><a class="btn gold" href="signup.html">Sign Up</a></nav></div></header>
+<section><div class="container"><div class="head"><h1>Member Dashboard</h1><p>Account and membership overview.</p></div>
+<div class="dashboard-grid">
+<div class="stat"><small>Status</small><strong id="dashStatus">Checking…</strong></div>
+<div class="stat"><small>Investment</small><strong id="dashPlan">Checking…</strong></div>
+<div class="stat"><small>Stated target</small><strong id="dashTarget">Checking…</strong></div>
+<div class="stat"><small>VIP membership</small><strong id="dashVip">Checking…</strong></div></div>
+<div class="card" style="margin-top:18px"><p><b>Name:</b> <span id="dashName">—</span></p><p><b>Email:</b> <span id="dashEmail">—</span></p><p><b>Mobile:</b> <span id="dashPhone">—</span></p><p class="notice">Investment targets are displayed as stated plan figures and are not guaranteed returns.</p></div>
+<button class="btn gold" style="margin-top:18px" onclick="logout()">Log Out</button></div></section>
+<script>window.addEventListener("load",loadDash)</script><footer><div class="container"><p>© 2026 Wealth Traders. All Rights Reserved.</p><p>Trading and investment involve financial risk. Stated targets and historical performance are not guarantees of future results.</p></div></footer><script src="script.js"></script></body></html>

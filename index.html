@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Wealth Traders | Trade Smart</title><link rel="stylesheet" href="style.css"></head><body class="home-page">
 <div class="topbar"><div>▥ <span>98% Reported Success Rate</span></div><div>♢ <span>Trusted by 10,000+ Traders Worldwide</span></div><div>◯ <span>24/7 Support</span></div></div>
-<header><div class="container nav"><a class="logo" href="index.html"><span class="logo-mark">↗</span> WEALTH <b>TRADERS</b></a><div class="mobile" onclick="menu()">☰</div><nav>
+<header><div class="container nav"><a class="logo" href="index.html" aria-label="Crypto Wealth Traders home"><img src="assets/cwt-logo.jpg" alt="CWT Crypto Wealth Traders logo"></a><div class="mobile" onclick="menu()">☰</div><nav>
 <a class="active" href="index.html">Home</a><a href="about.html">About</a><a href="investment.html">Investment</a><a href="vip.html">VIP</a><a href="dashboard.html">Dashboard</a><a href="testimonials.html">Testimonials</a><a href="faq.html">FAQ</a><a href="contact.html">Contact</a><a class="login-link" href="login.html">♙ Login</a><a class="btn gold nav-signup" href="signup.html">♟ Sign Up</a>
 </nav></div></header>
 <section class="hero"><div class="hero-overlay"></div><div class="container hero-inner"><div class="hero-content">
@@ -9,7 +9,12 @@
 <div class="actions"><a class="btn gold big" href="signup.html">GET STARTED NOW &nbsp; →</a><a class="btn outline big" href="investment.html">VIEW INVESTMENT PLANS</a></div>
 <div class="community"><span>Join our community</span><div><a href="https://wa.me/966582875787" target="_blank" rel="noopener">◉ WhatsApp</a><a href="https://t.me/wealth_traders_admin" target="_blank" rel="noopener">➤ Telegram</a></div></div>
 </div></div></section>
-<div class="ticker"><div><b>₿</b><span>BTC/USDT <i>+2.45%</i><small>66,892.30</small></span></div><div><b>◆</b><span>ETH/USDT <i>+1.32%</i><small>3,478.65</small></span></div><div><b>◆</b><span>BNB/USDT <i>+0.85%</i><small>595.80</small></span></div><div><b>≋</b><span>SOL/USDT <i>+3.15%</i><small>148.35</small></span></div><em>● Live Market</em></div>
+<div class="ticker" id="liveTicker">
+<div data-coin="bitcoin"><b>₿</b><span>BTC/USDT <i class="change">Loading…</i><small class="price">Loading…</small></span></div>
+<div data-coin="ethereum"><b>◆</b><span>ETH/USDT <i class="change">Loading…</i><small class="price">Loading…</small></span></div>
+<div data-coin="binancecoin"><b>◆</b><span>BNB/USDT <i class="change">Loading…</i><small class="price">Loading…</small></span></div>
+<div data-coin="solana"><b>≋</b><span>SOL/USDT <i class="change">Loading…</i><small class="price">Loading…</small></span></div>
+<em>● Live Market · updates automatically</em></div>
 <section class="plans-section"><div class="container"><div class="head"><h2>INVESTMENT PLANS</h2><p>Choose your favorite investment capital and review the available plan information.</p></div><div class="plans-grid">
 <div class="plan"><h3>STARTER</h3><span>Invest</span><strong>$200</strong><span>Reported target</span><b>$2,500</b><button class="btn gold" onclick="choosePlan('$200','$2,500')">SELECT PLAN</button></div>
 <div class="plan"><h3>BASIC</h3><span>Invest</span><strong>$300</strong><span>Reported target</span><b>$3,500</b><button class="btn gold" onclick="choosePlan('$300','$3,500')">SELECT PLAN</button></div>

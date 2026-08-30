@@ -13,3 +13,11 @@ section{padding:72px 0}.head{text-align:center;max-width:780px;margin:0 auto 40p
 .signal{display:flex;justify-content:space-between;gap:10px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07)}.signal:last-child{border-bottom:0}.win{color:var(--green);font-weight:bold}
 footer{border-top:1px solid rgba(255,255,255,.08);padding:32px 0;text-align:center;color:var(--muted);font-size:13px}
 @media(max-width:850px){nav{display:none}.mobile{display:block}nav.open{display:flex;position:absolute;left:0;right:0;top:74px;background:var(--navy);padding:20px;flex-direction:column;border-bottom:1px solid var(--line)}.hero{min-height:570px}}
+
+/* Full-site animated trading background */
+#market-bg{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(3,10,18,.45),rgba(3,10,18,.72))}
+body > *:not(#market-bg){position:relative;z-index:1}
+header{background:rgba(7,17,31,.82)}
+.hero{background:linear-gradient(135deg,rgba(7,17,31,.72),rgba(13,27,42,.68))}
+section{background:rgba(7,17,31,.38)}
+.card,.form,.faqitem,.stat{backdrop-filter:blur(3px)}

@@ -2,48 +2,11 @@
 <div class="topbar"><div>▥ Market information</div><div>♢ Risk-aware trading tools</div><div>◯ Support available</div></div>
 <header><div class="container nav"><a class="logo" href="index.html"><img src="cwt-logo.jpg" alt="CWT Crypto Wealth Traders logo"></a><div class="mobile" onclick="menu()">☰</div>
 <nav><a href="index.html">Home</a><a href="about.html">About</a><a href="investment.html">Investment</a><a href="vip.html">VIP</a><a href="dashboard.html">Dashboard</a><a href="testimonials.html">Testimonials</a><a href="faq.html">FAQ</a><a href="contact.html">Contact</a><a class="login-link" href="login.html">Login</a><a class="btn gold" href="signup.html">Sign Up</a></nav></div></header>
-<section><div class="container"><div class="head"><h1>Payment</h1><p>Review your selected investment or VIP package before making any transfer.</p></div>
-<div class="card" style="max-width:760px;margin:auto"><h3 id="paymentTitle">Selected package</h3><div class="price" id="selectedPackage">None</div>
-<p><b>Supported networks:</b> TRC20 and BEP20.</p>
-<p>For security, payment addresses should be published only after they have been verified by the account administrator. Always confirm the network and address before sending crypto; blockchain transfers are generally irreversible.</p>
-<div class="notice">This page does not automatically mark an account as paid. VIP status should change only after payment has been independently verified on the server.</div>
-<a class="btn gold" href="contact.html" style="margin-top:16px">Contact Support for Payment Instructions</a>
-<p id="syncNote" class="notice" style="margin-top:14px">Checking account status…</p></div></div></section>
-
-<section class="card payment-addresses" style="margin-top:24px">
-  <h2>Crypto Payment Information</h2>
-  <p>Send your payment using the correct network shown below.</p>
-
-  <div class="payment-method" style="margin-top:18px">
-    <h3>🟡 BEP-20 (BSC)</h3>
-    <p><strong>USDT BEP-20 Address:</strong></p>
-    <div class="address-box" style="word-break:break-all; padding:14px; border-radius:10px; background:#111820;">
-      0xae6f28147569ce0f32ff8ee95cbd184733dc405a
-    </div>
-    <button type="button" class="btn" onclick="navigator.clipboard.writeText('0xae6f28147569ce0f32ff8ee95cbd184733dc405a').then(()=>this.textContent='Copied!')">Copy BEP-20 Address</button>
-  </div>
-
-  <div class="payment-method" style="margin-top:22px">
-    <h3>🔵 TRC-20 (TRON)</h3>
-    <p><strong>USDT TRC-20 Address:</strong></p>
-    <div class="address-box" style="word-break:break-all; padding:14px; border-radius:10px; background:#111820;">
-      TYGGUNS7VUHrwST1PBRnjvfL7Hhksy1ztp
-    </div>
-    <button type="button" class="btn" onclick="navigator.clipboard.writeText('TYGGUNS7VUHrwST1PBRnjvfL7Hhksy1ztp').then(()=>this.textContent='Copied!')">Copy TRC-20 Address</button>
-  </div>
-
-  <p class="notice" style="margin-top:20px">
-    ⚠️ Confirm the network before sending. BEP-20 and TRC-20 are different networks.
-  </p>
-</section>
-
-<script>
-const plan=get("wt_selected_plan"); const vip=get("wt_vip"); const type=new URLSearchParams(location.search).get("type");
-if(type==="investment" && plan){document.getElementById("paymentTitle").textContent="Investment plan";document.getElementById("selectedPackage").textContent=plan.amount+" · stated target "+plan.target}
-else if(type==="vip" && vip){document.getElementById("paymentTitle").textContent="VIP membership";document.getElementById("selectedPackage").textContent=vip}
-syncSelection().then(user=>{
-  const n=document.getElementById("syncNote");
-  if(user) n.textContent="Your selection is attached to your member account. Payment remains pending until independently verified.";
-  else n.textContent="Please log in before making a transfer so the selection can be attached to your member account.";
-});
-</script><footer><div class="container"><p>© 2026 Wealth Traders. All Rights Reserved.</p><p>Trading and investment involve financial risk. Stated targets and historical performance are not guarantees of future results.</p></div></footer><script src="script.js"></script></body></html>
+<section><div class="container"><div class="head"><h1>Payment Information</h1><p>Review your selected package, then use the correct crypto network below.</p></div>
+<div class="card" style="max-width:820px;margin:auto"><h3 id="paymentTitle">Selected package</h3><div class="price" id="selectedPackage">None</div>
+<p><b>Supported networks:</b> TRC-20 and BEP-20.</p>
+<div class="grid" style="margin-top:22px">
+<div class="card"><h3>🟡 BEP-20 (BSC)</h3><p><b>USDT address</b></p><div class="address-box" style="word-break:break-all;padding:14px;border-radius:8px;background:#111820;border:1px solid #263742">0xae6f28147569ce0f32ff8ee95cbd184733dc405a</div><button type="button" class="btn gold" style="margin-top:12px" onclick="navigator.clipboard.writeText('0xae6f28147569ce0f32ff8ee95cbd184733dc405a').then(()=>this.textContent='Copied!')">Copy BEP-20</button></div>
+<div class="card"><h3>🔵 TRC-20 (TRON)</h3><p><b>USDT address</b></p><div class="address-box" style="word-break:break-all;padding:14px;border-radius:8px;background:#111820;border:1px solid #263742">TYGGUNS7VUHrwST1PBRnjvfL7Hhksy1ztp</div><button type="button" class="btn gold" style="margin-top:12px" onclick="navigator.clipboard.writeText('TYGGUNS7VUHrwST1PBRnjvfL7Hhksy1ztp').then(()=>this.textContent='Copied!')">Copy TRC-20</button></div></div>
+<p class="notice" style="margin-top:20px">⚠️ Confirm the network and address before sending. Blockchain transfers are generally irreversible. Payment is not marked as verified merely because a user makes a transfer.</p><a class="btn gold" href="contact.html" style="margin-top:8px">Contact Support</a><p id="syncNote" class="notice" style="margin-top:14px">Checking account status…</p></div></div></section>
+<script>const plan=get("wt_selected_plan"); const vip=get("wt_vip"); const type=new URLSearchParams(location.search).get("type"); if(type==="investment" && plan){document.getElementById("paymentTitle").textContent="Investment plan";document.getElementById("selectedPackage").textContent=plan.amount+" · stated target "+plan.target}else if(type==="vip" && vip){document.getElementById("paymentTitle").textContent="VIP membership";document.getElementById("selectedPackage").textContent=vip} syncSelection().then(user=>{const n=document.getElementById("syncNote");n.textContent=user?"Your selection is attached to your member account. Payment remains pending until independently verified.":"Log in before selecting a package if you want it attached to your member account."}).catch(e=>{document.getElementById("syncNote").textContent=e.message;});</script><footer><div class="container"><p>© 2026 Wealth Traders. All Rights Reserved.</p><p>Trading and investment involve financial risk. Stated targets and historical performance are not guarantees of future results.</p></div></footer><script src="script.js"></script></body></html>

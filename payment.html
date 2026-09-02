@@ -9,4 +9,24 @@
 <div class="card"><h3>🟡 BEP-20 (BSC)</h3><p><b>USDT address</b></p><div class="address-box" style="word-break:break-all;padding:14px;border-radius:8px;background:#111820;border:1px solid #263742">0xae6f28147569ce0f32ff8ee95cbd184733dc405a</div><button type="button" class="btn gold" style="margin-top:12px" onclick="navigator.clipboard.writeText('0xae6f28147569ce0f32ff8ee95cbd184733dc405a').then(()=>this.textContent='Copied!')">Copy BEP-20</button></div>
 <div class="card"><h3>🔵 TRC-20 (TRON)</h3><p><b>USDT address</b></p><div class="address-box" style="word-break:break-all;padding:14px;border-radius:8px;background:#111820;border:1px solid #263742">TYGGUNS7VUHrwST1PBRnjvfL7Hhksy1ztp</div><button type="button" class="btn gold" style="margin-top:12px" onclick="navigator.clipboard.writeText('TYGGUNS7VUHrwST1PBRnjvfL7Hhksy1ztp').then(()=>this.textContent='Copied!')">Copy TRC-20</button></div></div>
 <p class="notice" style="margin-top:20px">⚠️ Confirm the network and address before sending. Blockchain transfers are generally irreversible. Payment is not marked as verified merely because a user makes a transfer.</p><a class="btn gold" href="contact.html" style="margin-top:8px">Contact Support</a><p id="syncNote" class="notice" style="margin-top:14px">Checking account status…</p></div></div></section>
-<script>const plan=get("wt_selected_plan"); const vip=get("wt_vip"); const type=new URLSearchParams(location.search).get("type"); if(type==="investment" && plan){document.getElementById("paymentTitle").textContent="Investment plan";document.getElementById("selectedPackage").textContent=plan.amount+" · stated target "+plan.target}else if(type==="vip" && vip){document.getElementById("paymentTitle").textContent="VIP membership";document.getElementById("selectedPackage").textContent=vip} syncSelection().then(user=>{const n=document.getElementById("syncNote");n.textContent=user?"Your selection is attached to your member account. Payment remains pending until independently verified.":"Log in before selecting a package if you want it attached to your member account."}).catch(e=>{document.getElementById("syncNote").textContent=e.message;});</script><footer><div class="container"><p>© 2026 Wealth Traders. All Rights Reserved.</p><p>Trading and investment involve financial risk. Stated targets and historical performance are not guarantees of future results.</p></div></footer><script src="script.js"></script></body></html>
+<footer><div class="container"><p>© 2026 Wealth Traders. All Rights Reserved.</p><p>Trading and investment involve financial risk. Stated targets and historical performance are not guarantees of future results.</p></div></footer><script src="script.js"></script>
+<script>
+(function(){
+  const plan = get("wt_selected_plan");
+  const vip = get("wt_vip");
+  const type = new URLSearchParams(location.search).get("type");
+  if(type === "investment" && plan){
+    document.getElementById("paymentTitle").textContent = "Investment plan";
+    document.getElementById("selectedPackage").textContent = plan.amount + " · stated target " + plan.target;
+  } else if(type === "vip" && vip){
+    document.getElementById("paymentTitle").textContent = "VIP membership";
+    document.getElementById("selectedPackage").textContent = vip;
+  }
+  syncSelection().then(function(user){
+    const n=document.getElementById("syncNote");
+    n.textContent=user ? "Your selection is attached to your member account. Payment remains pending until independently verified." : "Log in before selecting a package if you want it attached to your member account.";
+  }).catch(function(e){
+    document.getElementById("syncNote").textContent="Backend is not connected yet. You can still view the payment information.";
+  });
+})();
+</script></body></html>

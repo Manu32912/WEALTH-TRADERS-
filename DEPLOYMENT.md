@@ -9,7 +9,7 @@ GitHub Pages cannot run Node.js or PostgreSQL. Deploy the `backend` folder to a 
 After deployment, set the HTTPS backend URL in `script.js` as `const API_BASE = "https://YOUR-BACKEND-DOMAIN";`.
 
 ## Registration
-Phone numbers are international. The form accepts a country code such as +254, +44 or +1; it does not restrict users to the UK.
+Phone numbers are international. The form accepts a country code such as +966, +44 or +1; it does not restrict users to the UK.
 
 ## Market ticker
 The home page requests current BTC/USDT, ETH/USDT, BNB/USDT and SOL/USDT prices from Binance's public market endpoint and refreshes every 15 seconds. If the API is unavailable, the ticker reports that the market is unavailable.

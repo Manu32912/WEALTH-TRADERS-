@@ -9,3 +9,68 @@ section{padding:64px 0}.hero{position:relative;min-height:560px;display:flex;ali
 .form{max-width:560px;margin:auto;background:#0b141b;border:1px solid var(--line);padding:26px;border-radius:10px}.form label{display:block;color:#cbd3d9;font-size:12px;margin:12px 0 6px}.form input,.form select{width:100%;padding:12px;background:#050a0e;border:1px solid #263742;color:#fff;border-radius:6px;outline:none}.form input:focus{border-color:#8d6c1e}.notice{font-size:11px;color:#98a4ad}.card h3{color:var(--gold)}.price{font-size:28px;font-weight:900;color:#f0f4f6}.target{color:var(--green);font-weight:900;margin:8px 0 18px}.faqitem{border:1px solid var(--line);border-radius:8px;margin:10px 0;overflow:hidden;background:#091118}.question{padding:16px;cursor:pointer;font-weight:800;color:#e9eef2}.answer{display:none;padding:0 16px 16px;color:#aeb9c1;font-size:13px}.faqitem.open .answer{display:block}.contact-icon{font-size:34px;margin-bottom:8px}.status-online{color:var(--green)!important}.dashboard-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#0b141b;border:1px solid var(--line);border-radius:9px;padding:20px}.stat strong{display:block;margin-top:7px;font-size:22px;color:#edf2f5}.online-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);margin-right:7px;box-shadow:0 0 10px rgba(32,214,107,.7)}
 footer{padding:28px 0;background:#020506;border-top:1px solid var(--line);color:#8e9aa3;font-size:11px;text-align:center}
 @media(max-width:900px){nav{display:none;position:absolute;top:70px;left:0;right:0;background:#05090d;flex-direction:column;padding:14px;border-bottom:1px solid var(--line);align-items:stretch}.nav.open nav{display:flex}.mobile{display:block}.logo img{width:112px;height:52px}.hero-stats{gap:18px}.vip-box{grid-template-columns:1fr}.dashboard-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.topbar{font-size:9px}.topbar>div:nth-child(2){display:none}.hero{min-height:540px}.hero h1{font-size:42px}.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.hero-stats strong{font-size:18px}.hero-stats small{font-size:8px}.dashboard-grid{grid-template-columns:1fr}.ticker>div{min-width:155px}.head h1,.head h2{font-size:28px}}
+/* ===== FLOATING CANDLESTICK BACKGROUND ===== */
+
+body {
+  position: relative;
+  overflow-x: hidden;
+  background: #050806;
+}
+
+#candleBackground {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+main,
+section,
+header,
+footer,
+nav,
+.hero,
+.container,
+.card,
+.payment-card,
+.dashboard-card {
+  position: relative;
+  z-index: 1;
+}
+
+/* Dark overlay keeps website text readable */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      rgba(0, 80, 45, 0.16),
+      rgba(0, 0, 0, 0.72) 75%
+    );
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Subtle trading grid */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 45px 45px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  #candleBackground {
+    opacity: 0.38;
+  }
+}

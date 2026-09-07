@@ -1,18 +1,434 @@
-{
-  "name": "wealth-traders-backend",
-  "version": "1.0.0",
-  "private": true,
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "bcryptjs": "^3.0.2",
-    "connect-pg-simple": "^10.0.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.6.1",
-    "express": "^5.1.0",
-    "express-session": "^1.18.2",
-    "pg": "^8.16.3"
-  }
+const express = require("express");
+const cors = require("cors");
+const session = require("express-session");
+const pgSession = require("connect-pg-simple")(session);
+const { Pool } = require("pg");
+const bcrypt = require("bcryptjs");
+require("dotenv").config();
+
+const app = express();
+
+const PORT = process.env.PORT || 3000;
+const FRONTEND_ORIGIN =
+  process.env.FRONTEND_ORIGIN || "https://manu32912.github.io";
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false
+});
+
+app.use(
+  cors({
+    origin: FRONTEND_ORIGIN,
+    credentials: true
+  })
+);
+
+app.use(express.json());
+
+app.use(
+  session({
+    store: new pgSession({
+      pool: pool,
+      createTableIfMissing: true
+    }),
+
+    secret:
+      process.env.SESSION_SECRET ||
+      "change-this-secret",
+
+    resave: false,
+    saveUninitialized: false,
+
+    cookie: {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    }
+  })
+);
+
+
+/* =========================
+   HEALTH CHECK
+========================= */
+
+app.get("/health", (req, res) => {
+  res.json({
+    ok: true,
+    message: "Wealth Traders backend is running"
+  });
+});
+
+
+/* =========================
+   PHONE VALIDATION
+========================= */
+
+function validPhone(phone) {
+  return /^\+[1-9]\d{7,14}$/.test(phone || "");
 }
+
+
+/* =========================
+   AUTHENTICATION MIDDLEWARE
+========================= */
+
+function requireAuth(req, res, next) {
+  if (!req.session.userId) {
+    return res.status(401).json({
+      message: "Not logged in"
+    });
+  }
+
+  next();
+}
+
+
+/* =========================
+   REGISTER
+========================= */
+
+app.post("/api/auth/register", async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      phone,
+      password
+    } = req.body;
+
+    if (
+      !name ||
+      !email ||
+      !validPhone(phone) ||
+      !password ||
+      password.length < 8
+    ) {
+      return res.status(400).json({
+        message: "Please provide valid registration details."
+      });
+    }
+
+    const existing = await pool.query(
+      "SELECT id FROM users WHERE email=$1 OR phone=$2",
+      [
+        email.toLowerCase().trim(),
+        phone
+      ]
+    );
+
+    if (existing.rowCount > 0) {
+      return res.status(409).json({
+        message: "Email or phone already registered."
+      });
+    }
+
+    const passwordHash = await bcrypt.hash(
+      password,
+      12
+    );
+
+    const result = await pool.query(
+      `INSERT INTO users
+       (name, email, phone, password_hash, last_seen)
+       VALUES ($1,$2,$3,$4,NOW())
+       RETURNING id,name,email,phone`,
+      [
+        name.trim(),
+        email.toLowerCase().trim(),
+        phone,
+        passwordHash
+      ]
+    );
+
+    req.session.userId = result.rows[0].id;
+
+    res.json({
+      user: result.rows[0]
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      message: "Registration failed."
+    });
+  }
+});
+
+
+/* =========================
+   LOGIN
+========================= */
+
+app.post("/api/auth/login", async (req, res) => {
+
+  try {
+
+    const {
+      email,
+      password
+    } = req.body;
+
+    const result = await pool.query(
+      "SELECT * FROM users WHERE email=$1",
+      [
+        (email || "")
+          .toLowerCase()
+          .trim()
+      ]
+    );
+
+    if (result.rowCount === 0) {
+
+      return res.status(401).json({
+        message: "Invalid email or password."
+      });
+    }
+
+    const user = result.rows[0];
+
+    const passwordCorrect =
+      await bcrypt.compare(
+        password || "",
+        user.password_hash
+      );
+
+    if (!passwordCorrect) {
+
+      return res.status(401).json({
+        message: "Invalid email or password."
+      });
+    }
+
+    await pool.query(
+      "UPDATE users SET last_seen=NOW() WHERE id=$1",
+      [user.id]
+    );
+
+    req.session.userId = user.id;
+
+    res.json({
+      message: "Login successful."
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      message: "Login failed."
+    });
+  }
+});
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+app.post("/api/auth/logout", (req, res) => {
+
+  req.session.destroy(() => {
+
+    res.json({
+      ok: true
+    });
+
+  });
+});
+
+
+/* =========================
+   MEMBER DASHBOARD
+========================= */
+
+app.get("/api/me", requireAuth, async (req, res) => {
+
+  try {
+
+    const user = await pool.query(
+      `SELECT
+        id,
+        name,
+        email,
+        phone,
+        last_seen,
+        created_at
+       FROM users
+       WHERE id=$1`,
+      [req.session.userId]
+    );
+
+    if (user.rowCount === 0) {
+
+      return res.status(404).json({
+        message: "User not found."
+      });
+    }
+
+    const investment = await pool.query(
+      `SELECT
+        amount,
+        target,
+        status
+       FROM investments
+       WHERE user_id=$1
+       ORDER BY id DESC
+       LIMIT 1`,
+      [req.session.userId]
+    );
+
+    const vip = await pool.query(
+      `SELECT
+        package_name,
+        status,
+        verified_at
+       FROM vip_memberships
+       WHERE user_id=$1
+       ORDER BY id DESC
+       LIMIT 1`,
+      [req.session.userId]
+    );
+
+    res.json({
+
+      user: user.rows[0],
+
+      investment:
+        investment.rows[0] || null,
+
+      vip:
+        vip.rows[0] || null
+
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      message: "Could not load account."
+    });
+  }
+});
+
+
+/* =========================
+   SELECT INVESTMENT
+========================= */
+
+app.post(
+  "/api/investments/select",
+  requireAuth,
+  async (req, res) => {
+
+    try {
+
+      const {
+        amount,
+        target
+      } = req.body;
+
+      if (
+        !Number.isFinite(Number(amount)) ||
+        !Number.isFinite(Number(target))
+      ) {
+
+        return res.status(400).json({
+          message: "Invalid investment."
+        });
+      }
+
+      await pool.query(
+        `INSERT INTO investments
+         (user_id, amount, target, status)
+         VALUES ($1,$2,$3,'Pending')`,
+        [
+          req.session.userId,
+          amount,
+          target
+        ]
+      );
+
+      res.json({
+        message: "Investment selected."
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      res.status(500).json({
+        message: "Could not save investment."
+      });
+    }
+  }
+);
+
+
+/* =========================
+   SELECT VIP
+========================= */
+
+app.post(
+  "/api/vip/select",
+  requireAuth,
+  async (req, res) => {
+
+    try {
+
+      const {
+        packageName
+      } = req.body;
+
+      if (!packageName) {
+
+        return res.status(400).json({
+          message: "Package is required."
+        });
+      }
+
+      await pool.query(
+        `INSERT INTO vip_memberships
+         (user_id, package_name, status)
+         VALUES ($1,$2,'Pending')`,
+        [
+          req.session.userId,
+          packageName
+        ]
+      );
+
+      res.json({
+        message: "VIP package selected."
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+      res.status(500).json({
+        message: "Could not save VIP selection."
+      });
+    }
+  }
+);
+
+
+/* =========================
+   START SERVER
+========================= */
+
+app.listen(PORT, () => {
+
+  console.log(
+    `Wealth Traders backend listening on port ${PORT}`
+  );
+
+});

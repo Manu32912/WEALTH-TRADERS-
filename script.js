@@ -31,22 +31,51 @@
 
       candles = [];
 
-      const spacing = window.innerWidth < 600 ? 48 : 65;
-      const count = Math.ceil(width / spacing) + 5;
+      /* More candles across the screen */
+      const spacing = window.innerWidth < 600 ? 28 : 38;
+      const columns = Math.ceil(width / spacing) + 8;
 
-      for (let i = 0; i < count; i++) {
+      /* Several rows of candles */
+      const rows = window.innerWidth < 600 ? 7 : 9;
 
-        candles.push({
-          x: i * spacing + Math.random() * 30,
-          y: Math.random() * height,
-          bodyHeight: 25 + Math.random() * 90,
-          width: window.innerWidth < 600 ? 8 : 12,
-          speed: 0.15 + Math.random() * 0.35,
-          drift: (Math.random() - 0.5) * 0.25,
-          phase: Math.random() * Math.PI * 2,
-          green: Math.random() > 0.48,
-          opacity: 0.25 + Math.random() * 0.5
-        });
+      for (let row = 0; row < rows; row++) {
+
+        for (let i = 0; i < columns; i++) {
+
+          const green = Math.random() > 0.48;
+
+          candles.push({
+
+            x: i * spacing +
+              Math.random() * spacing,
+
+            y: Math.random() * height,
+
+            bodyHeight:
+              18 + Math.random() * 75,
+
+            width:
+              window.innerWidth < 600
+                ? 6 + Math.random() * 4
+                : 8 + Math.random() * 7,
+
+            speed:
+              0.08 + Math.random() * 0.22,
+
+            drift:
+              (Math.random() - 0.5) * 0.18,
+
+            phase:
+              Math.random() * Math.PI * 2,
+
+            green: green,
+
+            opacity:
+              0.40 + Math.random() * 0.40
+
+          });
+
+        }
 
       }
 
@@ -56,50 +85,53 @@
 
       candle.y -= candle.speed;
 
-      candle.x += Math.sin(
-        time * 0.0005 + candle.phase
-      ) * candle.drift;
+      candle.x +=
+        Math.sin(
+          time * 0.00035 +
+          candle.phase
+        ) * candle.drift;
 
-      if (candle.y < -150) {
+      if (candle.y < -130) {
 
-        candle.y = height + 100;
+        candle.y =
+          height + 100;
 
-        candle.green = Math.random() > 0.48;
+        candle.green =
+          Math.random() > 0.48;
 
         candle.bodyHeight =
-          25 + Math.random() * 90;
+          18 + Math.random() * 75;
 
       }
 
+      const wickLength =
+        candle.bodyHeight * 0.75;
+
       const wickTop =
-        candle.y - candle.bodyHeight * 0.65;
+        candle.y - wickLength;
 
       const wickBottom =
-        candle.y + candle.bodyHeight * 0.65;
+        candle.y + wickLength;
 
       const color =
         candle.green
-          ? `rgba(0,255,130,${candle.opacity})`
-          : `rgba(255,45,55,${candle.opacity})`;
+          ? `rgba(0,255,110,${candle.opacity})`
+          : `rgba(255,35,45,${candle.opacity})`;
 
       const glow =
         candle.green
-          ? "rgba(0,255,130,0.35)"
-          : "rgba(255,45,55,0.35)";
-
+          ? "rgba(0,255,110,0.55)"
+          : "rgba(255,35,45,0.55)";
 
       /* Glow */
-
-      ctx.shadowBlur = 18;
+      ctx.shadowBlur = 12;
       ctx.shadowColor = glow;
 
-
       /* Wick */
-
       ctx.beginPath();
 
       ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1.5;
 
       ctx.moveTo(
         candle.x,
@@ -113,9 +145,7 @@
 
       ctx.stroke();
 
-
       /* Candle body */
-
       ctx.fillStyle = color;
 
       ctx.fillRect(
@@ -125,9 +155,7 @@
         candle.bodyHeight
       );
 
-
-      /* Highlight */
-
+      /* Bright edge */
       ctx.shadowBlur = 0;
 
       ctx.strokeStyle = color;
@@ -141,7 +169,6 @@
       );
 
     }
-
 
     function animate(time) {
 
@@ -162,7 +189,6 @@
 
     }
 
-
     resize();
 
     window.addEventListener(
@@ -173,7 +199,6 @@
     requestAnimationFrame(animate);
 
   }
-
 
   if (document.readyState === "loading") {
 

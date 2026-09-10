@@ -1,10 +1,10 @@
 /* =====================================================
-   FLOATING ANIMATED CRYPTO CANDLESTICKS
+   PROFESSIONAL LIVE-STYLE TRADING CHART BACKGROUND
    ===================================================== */
 
 (function () {
 
-  function createCandleBackground() {
+  function startTradingChart() {
 
     if (document.getElementById("candleBackground")) return;
 
@@ -15,162 +15,372 @@
 
     const ctx = canvas.getContext("2d");
 
-    let candles = [];
     let width = 0;
     let height = 0;
+    let candles = [];
+
+    const isMobile = () => window.innerWidth < 600;
 
     function resize() {
 
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      width = window.innerWidth;
+      height = window.innerHeight;
 
-      createCandles();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      createChart();
     }
 
-    function createCandles() {
+
+    /* ================================
+       CREATE CONTINUOUS MARKET PATTERN
+       ================================ */
+
+    function createChart() {
 
       candles = [];
 
-      /* More candles across the screen */
-      const spacing = window.innerWidth < 600 ? 28 : 38;
-      const columns = Math.ceil(width / spacing) + 8;
+      const spacing = isMobile() ? 18 : 25;
+      const count = Math.ceil(width / spacing) + 20;
 
-      /* Several rows of candles */
-      const rows = window.innerWidth < 600 ? 7 : 9;
+      let price = 100;
 
-      for (let row = 0; row < rows; row++) {
+      for (let i = 0; i < count; i++) {
 
-        for (let i = 0; i < columns; i++) {
+        /*
+          Smooth trend + market noise.
+          This gives the chart a continuous
+          trading pattern instead of random
+          floating candles.
+        */
 
-          const green = Math.random() > 0.48;
+        const wave =
+          Math.sin(i * 0.12) * 1.8 +
+          Math.sin(i * 0.035) * 3;
 
-          candles.push({
+        const movement =
+          (Math.random() - 0.48) * 3;
 
-            x: i * spacing +
-              Math.random() * spacing,
+        const open = price;
 
-            y: Math.random() * height,
+        const close =
+          open + wave + movement;
 
-            bodyHeight:
-              18 + Math.random() * 75,
+        const high =
+          Math.max(open, close) +
+          1 +
+          Math.random() * 3;
 
-            width:
-              window.innerWidth < 600
-                ? 6 + Math.random() * 4
-                : 8 + Math.random() * 7,
+        const low =
+          Math.min(open, close) -
+          1 -
+          Math.random() * 3;
 
-            speed:
-              0.08 + Math.random() * 0.22,
+        candles.push({
 
-            drift:
-              (Math.random() - 0.5) * 0.18,
+          x: i * spacing,
 
-            phase:
-              Math.random() * Math.PI * 2,
+          open: open,
+          close: close,
+          high: high,
+          low: low,
 
-            green: green,
+          width:
+            isMobile()
+              ? 7
+              : 11
 
-            opacity:
-              0.40 + Math.random() * 0.40
+        });
 
-          });
-
-        }
-
+        price = close;
       }
-
     }
 
-    function drawCandle(candle, time) {
 
-      candle.y -= candle.speed;
+    /* ================================
+       CALCULATE CHART SCALE
+       ================================ */
 
-      candle.x +=
-        Math.sin(
-          time * 0.00035 +
-          candle.phase
-        ) * candle.drift;
+    function getScale() {
 
-      if (candle.y < -130) {
+      let highest = -Infinity;
+      let lowest = Infinity;
 
-        candle.y =
-          height + 100;
+      candles.forEach(c => {
 
-        candle.green =
-          Math.random() > 0.48;
+        highest =
+          Math.max(highest, c.high);
 
-        candle.bodyHeight =
-          18 + Math.random() * 75;
+        lowest =
+          Math.min(lowest, c.low);
+
+      });
+
+      return {
+
+        highest,
+        lowest,
+
+        range:
+          Math.max(
+            highest - lowest,
+            1
+          )
+
+      };
+    }
+
+
+    /* ================================
+       DRAW TRADING GRID
+       ================================ */
+
+    function drawGrid() {
+
+      ctx.save();
+
+      ctx.strokeStyle =
+        "rgba(255,255,255,0.035)";
+
+      ctx.lineWidth = 1;
+
+      const grid =
+        isMobile()
+          ? 32
+          : 45;
+
+
+      for (
+        let x = 0;
+        x <= width;
+        x += grid
+      ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(x, 0);
+
+        ctx.lineTo(
+          x,
+          height
+        );
+
+        ctx.stroke();
+      }
+
+
+      for (
+        let y = 0;
+        y <= height;
+        y += grid
+      ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(0, y);
+
+        ctx.lineTo(
+          width,
+          y
+        );
+
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+
+    /* ================================
+       DRAW ONE PROFESSIONAL CANDLE
+       ================================ */
+
+    function drawCandle(
+      candle,
+      scale
+    ) {
+
+      const topSpace =
+        height * 0.12;
+
+      const chartHeight =
+        height * 0.76;
+
+
+      function priceToY(price) {
+
+        return (
+          topSpace +
+          (
+            (scale.highest - price) /
+            scale.range
+          ) *
+          chartHeight
+        );
 
       }
 
-      const wickLength =
-        candle.bodyHeight * 0.75;
 
-      const wickTop =
-        candle.y - wickLength;
+      const openY =
+        priceToY(candle.open);
 
-      const wickBottom =
-        candle.y + wickLength;
+      const closeY =
+        priceToY(candle.close);
 
-      const color =
-        candle.green
-          ? `rgba(0,255,110,${candle.opacity})`
-          : `rgba(255,35,45,${candle.opacity})`;
+      const highY =
+        priceToY(candle.high);
 
-      const glow =
-        candle.green
-          ? "rgba(0,255,110,0.55)"
-          : "rgba(255,35,45,0.55)";
+      const lowY =
+        priceToY(candle.low);
 
-      /* Glow */
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = glow;
+
+      const bullish =
+        candle.close >= candle.open;
+
+
+      const bodyTop =
+        Math.min(
+          openY,
+          closeY
+        );
+
+      const bodyBottom =
+        Math.max(
+          openY,
+          closeY
+        );
+
+
+      const bodyHeight =
+        Math.max(
+          bodyBottom - bodyTop,
+          4
+        );
+
+
+      /*
+        Red / Green professional
+        trading colours.
+      */
+
+      const bodyColor =
+        bullish
+          ? "rgba(0,255,125,0.62)"
+          : "rgba(255,45,55,0.62)";
+
+
+      const glowColor =
+        bullish
+          ? "rgba(0,255,125,0.35)"
+          : "rgba(255,45,55,0.35)";
+
+
+      /* Candle glow */
+
+      ctx.save();
+
+      ctx.shadowBlur = 10;
+      ctx.shadowColor =
+        glowColor;
+
 
       /* Wick */
+
       ctx.beginPath();
 
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.5;
+      ctx.strokeStyle =
+        bodyColor;
+
+      ctx.lineWidth = 1.4;
 
       ctx.moveTo(
         candle.x,
-        wickTop
+        highY
       );
 
       ctx.lineTo(
         candle.x,
-        wickBottom
+        lowY
       );
 
       ctx.stroke();
 
+
       /* Candle body */
-      ctx.fillStyle = color;
+
+      ctx.fillStyle =
+        bodyColor;
 
       ctx.fillRect(
-        candle.x - candle.width / 2,
-        candle.y - candle.bodyHeight / 2,
+
+        candle.x -
+        candle.width / 2,
+
+        bodyTop,
+
         candle.width,
-        candle.bodyHeight
+
+        bodyHeight
       );
 
-      /* Bright edge */
+
+      /* Body outline */
+
       ctx.shadowBlur = 0;
 
-      ctx.strokeStyle = color;
+      ctx.strokeStyle =
+        bodyColor;
+
       ctx.lineWidth = 1;
 
       ctx.strokeRect(
-        candle.x - candle.width / 2,
-        candle.y - candle.bodyHeight / 2,
+
+        candle.x -
+        candle.width / 2,
+
+        bodyTop,
+
         candle.width,
-        candle.bodyHeight
+
+        bodyHeight
       );
 
+      ctx.restore();
     }
 
+
+    /* ================================
+       ANIMATION
+       ================================ */
+
+    let lastTime = 0;
+
     function animate(time) {
+
+      if (!lastTime) {
+
+        lastTime =
+          time;
+
+      }
+
+      const delta =
+        Math.min(
+          time - lastTime,
+          40
+        );
+
+      lastTime =
+        time;
+
 
       ctx.clearRect(
         0,
@@ -179,37 +389,179 @@
         height
       );
 
-      candles.forEach(function (candle) {
 
-        drawCandle(candle, time);
+      drawGrid();
 
-      });
 
-      requestAnimationFrame(animate);
+      /*
+        Slowly move the chart
+        from right → left.
+      */
 
+      const movement =
+        delta * 0.018;
+
+
+      candles.forEach(
+        candle => {
+
+          candle.x -=
+            movement;
+
+        }
+      );
+
+
+      /*
+        Add a new candle
+        on the right.
+      */
+
+      const spacing =
+        isMobile()
+          ? 18
+          : 25;
+
+      const last =
+        candles[candles.length - 1];
+
+
+      if (
+        last &&
+        last.x <
+        width -
+        spacing * 2
+      ) {
+
+        const previous =
+          last.close;
+
+
+        const trend =
+          Math.sin(
+            Date.now() *
+            0.00012
+          ) * 1.4;
+
+
+        const open =
+          previous;
+
+
+        const close =
+          open +
+          trend +
+          (Math.random() - 0.48) * 2.2;
+
+
+        const high =
+          Math.max(
+            open,
+            close
+          ) +
+          1 +
+          Math.random() * 2.5;
+
+
+        const low =
+          Math.min(
+            open,
+            close
+          ) -
+          1 -
+          Math.random() * 2.5;
+
+
+        candles.push({
+
+          x:
+            width + spacing,
+
+          open,
+          close,
+          high,
+          low,
+
+          width:
+            isMobile()
+              ? 7
+              : 11
+
+        });
+      }
+
+
+      /*
+        Remove candles that
+        leave the screen.
+      */
+
+      while (
+        candles.length &&
+        candles[0].x <
+        -60
+      ) {
+
+        candles.shift();
+
+      }
+
+
+      const scale =
+        getScale();
+
+
+      /*
+        Draw candles.
+      */
+
+      candles.forEach(
+        candle => {
+
+          drawCandle(
+            candle,
+            scale
+          );
+
+        }
+      );
+
+
+      requestAnimationFrame(
+        animate
+      );
     }
 
+
     resize();
+
 
     window.addEventListener(
       "resize",
       resize
     );
 
-    requestAnimationFrame(animate);
+
+    requestAnimationFrame(
+      animate
+    );
 
   }
 
-  if (document.readyState === "loading") {
+
+  if (
+    document.readyState ===
+    "loading"
+  ) {
 
     document.addEventListener(
       "DOMContentLoaded",
-      createCandleBackground
+      startTradingChart
     );
 
   } else {
 
-    createCandleBackground();
+    startTradingChart();
 
   }
 

@@ -1,5 +1,6 @@
 /* =====================================================
-   PROFESSIONAL LIVE-STYLE TRADING CHART BACKGROUND
+   WEALTH TRADERS
+   PROFESSIONAL 3-LINE TRADING CHART BACKGROUND
    ===================================================== */
 
 (function () {
@@ -10,23 +11,30 @@
 
     const canvas = document.createElement("canvas");
     canvas.id = "candleBackground";
-
     document.body.prepend(canvas);
 
     const ctx = canvas.getContext("2d");
 
     let width = 0;
     let height = 0;
-    let candles = [];
 
-    const isMobile = () => window.innerWidth < 600;
+    const lines = [];
+
+    const isMobile = () =>
+      window.innerWidth < 600;
+
+
+    /* =================================================
+       RESIZE
+       ================================================= */
 
     function resize() {
 
       width = window.innerWidth;
       height = window.innerHeight;
 
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr =
+        Math.min(window.devicePixelRatio || 1, 2);
 
       canvas.width = width * dpr;
       canvas.height = height * dpr;
@@ -34,196 +42,343 @@
       canvas.style.width = width + "px";
       canvas.style.height = height + "px";
 
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+      );
 
-      createChart();
+      createLines();
     }
 
 
-    /* ================================
-       CREATE CONTINUOUS MARKET PATTERN
-       ================================ */
+    /* =================================================
+       CREATE THREE TRADING LINES
+       ================================================= */
 
-    function createChart() {
+    function createLines() {
 
-      candles = [];
+      lines.length = 0;
 
-      const spacing = isMobile() ? 18 : 25;
-      const count = Math.ceil(width / spacing) + 20;
+      const spacing =
+        isMobile() ? 18 : 25;
 
-      let price = 100;
+      const candleCount =
+        Math.ceil(width / spacing) + 30;
 
-      for (let i = 0; i < count; i++) {
+      /*
+        Three separate chart zones.
+      */
 
-        /*
-          Smooth trend + market noise.
-          This gives the chart a continuous
-          trading pattern instead of random
-          floating candles.
-        */
+      const zones = [
+        0.24,
+        0.50,
+        0.76
+      ];
 
-        const wave =
-          Math.sin(i * 0.12) * 1.8 +
-          Math.sin(i * 0.035) * 3;
+      zones.forEach(
+        (zonePosition, lineIndex) => {
 
-        const movement =
-          (Math.random() - 0.48) * 3;
+          const candles = [];
 
-        const open = price;
+          let price =
+            100 + Math.random() * 20;
 
-        const close =
-          open + wave + movement;
+          for (
+            let i = 0;
+            i < candleCount;
+            i++
+          ) {
 
-        const high =
-          Math.max(open, close) +
-          1 +
-          Math.random() * 3;
+            /*
+              Each line has a slightly
+              different market behaviour.
+            */
 
-        const low =
-          Math.min(open, close) -
-          1 -
-          Math.random() * 3;
+            let wave;
 
-        candles.push({
+            if (lineIndex === 0) {
 
-          x: i * spacing,
+              wave =
+                Math.sin(i * 0.13) * 2.2 +
+                Math.sin(i * 0.035) * 3.5;
 
-          open: open,
-          close: close,
-          high: high,
-          low: low,
+            } else if (lineIndex === 1) {
 
-          width:
-            isMobile()
-              ? 7
-              : 11
+              wave =
+                Math.sin(i * 0.19) * 2.7 +
+                Math.sin(i * 0.06) * 2.4;
 
-        });
+            } else {
 
-        price = close;
-      }
+              wave =
+                Math.sin(i * 0.09) * 2.4 +
+                Math.sin(i * 0.025) * 4;
+            }
+
+
+            const movement =
+              (Math.random() - 0.48) * 3;
+
+
+            const open =
+              price;
+
+
+            const close =
+              open +
+              wave +
+              movement;
+
+
+            /*
+              Realistic high / low.
+            */
+
+            const high =
+              Math.max(
+                open,
+                close
+              ) +
+              1 +
+              Math.random() * 3.5;
+
+
+            const low =
+              Math.min(
+                open,
+                close
+              ) -
+              1 -
+              Math.random() * 3.5;
+
+
+            candles.push({
+
+              x:
+                i * spacing,
+
+              open,
+              close,
+              high,
+              low,
+
+              width:
+                isMobile()
+                  ? 7
+                  : 10
+
+            });
+
+
+            price =
+              close;
+          }
+
+
+          lines.push({
+
+            candles,
+
+            zone:
+              height *
+              zonePosition,
+
+            speed:
+              0.012 +
+              lineIndex * 0.002
+
+          });
+
+        }
+      );
     }
 
 
-    /* ================================
-       CALCULATE CHART SCALE
-       ================================ */
+    /* =================================================
+       DRAW THE THREE TRADING ZONES
+       ================================================= */
 
-    function getScale() {
-
-      let highest = -Infinity;
-      let lowest = Infinity;
-
-      candles.forEach(c => {
-
-        highest =
-          Math.max(highest, c.high);
-
-        lowest =
-          Math.min(lowest, c.low);
-
-      });
-
-      return {
-
-        highest,
-        lowest,
-
-        range:
-          Math.max(
-            highest - lowest,
-            1
-          )
-
-      };
-    }
-
-
-    /* ================================
-       DRAW TRADING GRID
-       ================================ */
-
-    function drawGrid() {
+    function drawZoneGuides() {
 
       ctx.save();
 
       ctx.strokeStyle =
-        "rgba(255,255,255,0.035)";
+        "rgba(255,255,255,0.055)";
 
       ctx.lineWidth = 1;
 
-      const grid =
-        isMobile()
-          ? 32
-          : 45;
-
-
-      for (
-        let x = 0;
-        x <= width;
-        x += grid
-      ) {
+      lines.forEach(line => {
 
         ctx.beginPath();
 
-        ctx.moveTo(x, 0);
-
-        ctx.lineTo(
-          x,
-          height
+        ctx.moveTo(
+          0,
+          line.zone
         );
-
-        ctx.stroke();
-      }
-
-
-      for (
-        let y = 0;
-        y <= height;
-        y += grid
-      ) {
-
-        ctx.beginPath();
-
-        ctx.moveTo(0, y);
 
         ctx.lineTo(
           width,
-          y
+          line.zone
         );
 
         ctx.stroke();
-      }
+
+      });
 
       ctx.restore();
     }
 
 
-    /* ================================
-       DRAW ONE PROFESSIONAL CANDLE
-       ================================ */
+    /* =================================================
+       DRAW HIGH / LOW RANGE MARKERS
+       ================================================= */
 
-    function drawCandle(
-      candle,
-      scale
+    function drawHighLowLines(
+      candles,
+      top,
+      bottom
     ) {
 
-      const topSpace =
-        height * 0.12;
+      if (!candles.length) return;
 
-      const chartHeight =
-        height * 0.76;
+      let high =
+        -Infinity;
+
+      let low =
+        Infinity;
+
+      candles.forEach(candle => {
+
+        high =
+          Math.max(
+            high,
+            candle.high
+          );
+
+        low =
+          Math.min(
+            low,
+            candle.low
+          );
+
+      });
+
+
+      const range =
+        Math.max(
+          high - low,
+          1
+        );
 
 
       function priceToY(price) {
 
         return (
-          topSpace +
+          bottom -
           (
-            (scale.highest - price) /
-            scale.range
+            (price - low) /
+            range
           ) *
-          chartHeight
+          (bottom - top)
+        );
+
+      }
+
+
+      const highY =
+        priceToY(high);
+
+      const lowY =
+        priceToY(low);
+
+
+      /*
+        HIGH line
+      */
+
+      ctx.save();
+
+      ctx.setLineDash([
+        7,
+        7
+      ]);
+
+      ctx.strokeStyle =
+        "rgba(0,255,125,0.12)";
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        0,
+        highY
+      );
+
+      ctx.lineTo(
+        width,
+        highY
+      );
+
+      ctx.stroke();
+
+
+      /*
+        LOW line
+      */
+
+      ctx.strokeStyle =
+        "rgba(255,55,65,0.12)";
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        0,
+        lowY
+      );
+
+      ctx.lineTo(
+        width,
+        lowY
+      );
+
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+
+    /* =================================================
+       DRAW ONE CANDLE
+       ================================================= */
+
+    function drawCandle(
+      candle,
+      line,
+      scaleTop,
+      scaleBottom,
+      high,
+      low
+    ) {
+
+      const range =
+        Math.max(
+          high - low,
+          1
+        );
+
+
+      function priceToY(price) {
+
+        return (
+          scaleBottom -
+          (
+            (price - low) /
+            range
+          ) *
+          (scaleBottom - scaleTop)
         );
 
       }
@@ -252,6 +407,7 @@
           closeY
         );
 
+
       const bodyBottom =
         Math.max(
           openY,
@@ -261,43 +417,54 @@
 
       const bodyHeight =
         Math.max(
-          bodyBottom - bodyTop,
-          4
+          bodyBottom -
+          bodyTop,
+          3
         );
 
 
-      /*
-        Red / Green professional
-        trading colours.
-      */
+      const green =
+        "rgba(0,255,125,0.68)";
 
-      const bodyColor =
+      const red =
+        "rgba(255,45,55,0.68)";
+
+
+      const greenGlow =
+        "rgba(0,255,125,0.4)";
+
+      const redGlow =
+        "rgba(255,45,55,0.4)";
+
+
+      const color =
         bullish
-          ? "rgba(0,255,125,0.62)"
-          : "rgba(255,45,55,0.62)";
+          ? green
+          : red;
 
-
-      const glowColor =
-        bullish
-          ? "rgba(0,255,125,0.35)"
-          : "rgba(255,45,55,0.35)";
-
-
-      /* Candle glow */
 
       ctx.save();
 
-      ctx.shadowBlur = 10;
+      /*
+        Candle glow
+      */
+
+      ctx.shadowBlur = 9;
+
       ctx.shadowColor =
-        glowColor;
+        bullish
+          ? greenGlow
+          : redGlow;
 
 
-      /* Wick */
+      /*
+        Wick
+      */
 
       ctx.beginPath();
 
       ctx.strokeStyle =
-        bodyColor;
+        color;
 
       ctx.lineWidth = 1.4;
 
@@ -314,10 +481,12 @@
       ctx.stroke();
 
 
-      /* Candle body */
+      /*
+        Body
+      */
 
       ctx.fillStyle =
-        bodyColor;
+        color;
 
       ctx.fillRect(
 
@@ -329,17 +498,20 @@
         candle.width,
 
         bodyHeight
+
       );
 
 
-      /* Body outline */
+      /*
+        Fine candle border
+      */
 
       ctx.shadowBlur = 0;
 
       ctx.strokeStyle =
-        bodyColor;
+        color;
 
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 0.8;
 
       ctx.strokeRect(
 
@@ -351,58 +523,26 @@
         candle.width,
 
         bodyHeight
+
       );
 
+
       ctx.restore();
+
     }
 
 
-    /* ================================
-       ANIMATION
-       ================================ */
+    /* =================================================
+       UPDATE MARKET
+       ================================================= */
 
-    let lastTime = 0;
-
-    function animate(time) {
-
-      if (!lastTime) {
-
-        lastTime =
-          time;
-
-      }
-
-      const delta =
-        Math.min(
-          time - lastTime,
-          40
-        );
-
-      lastTime =
-        time;
-
-
-      ctx.clearRect(
-        0,
-        0,
-        width,
-        height
-      );
-
-
-      drawGrid();
-
-
-      /*
-        Slowly move the chart
-        from right → left.
-      */
+    function updateLine(line, delta) {
 
       const movement =
-        delta * 0.018;
+        delta * line.speed;
 
 
-      candles.forEach(
+      line.candles.forEach(
         candle => {
 
           candle.x -=
@@ -413,45 +553,56 @@
 
 
       /*
-        Add a new candle
-        on the right.
+        Create a new candle when
+        the last one approaches
+        the right side.
       */
+
+      const last =
+        line.candles[
+          line.candles.length - 1
+        ];
+
+
+      if (!last) return;
+
 
       const spacing =
         isMobile()
           ? 18
           : 25;
 
-      const last =
-        candles[candles.length - 1];
-
 
       if (
-        last &&
         last.x <
         width -
         spacing * 2
       ) {
 
-        const previous =
+        const open =
           last.close;
 
+
+        /*
+          Slightly different movement
+          for each trading line.
+        */
 
         const trend =
           Math.sin(
             Date.now() *
-            0.00012
+            (0.00008 + line.speed * 0.001)
           ) * 1.4;
-
-
-        const open =
-          previous;
 
 
         const close =
           open +
           trend +
-          (Math.random() - 0.48) * 2.2;
+          (
+            Math.random() -
+            0.48
+          ) *
+          2.5;
 
 
         const high =
@@ -460,7 +611,7 @@
             close
           ) +
           1 +
-          Math.random() * 2.5;
+          Math.random() * 3;
 
 
         const low =
@@ -469,10 +620,10 @@
             close
           ) -
           1 -
-          Math.random() * 2.5;
+          Math.random() * 3;
 
 
-        candles.push({
+        line.candles.push({
 
           x:
             width + spacing,
@@ -485,7 +636,7 @@
           width:
             isMobile()
               ? 7
-              : 11
+              : 10
 
         });
       }
@@ -497,39 +648,178 @@
       */
 
       while (
-        candles.length &&
-        candles[0].x <
+        line.candles.length &&
+        line.candles[0].x <
         -60
       ) {
 
-        candles.shift();
+        line.candles.shift();
+
+      }
+
+    }
+
+
+    /* =================================================
+       DRAW EVERYTHING
+       ================================================= */
+
+    function draw() {
+
+      ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+      );
+
+
+      drawZoneGuides();
+
+
+      lines.forEach(
+        line => {
+
+          if (
+            !line.candles.length
+          ) return;
+
+
+          let high =
+            -Infinity;
+
+          let low =
+            Infinity;
+
+
+          line.candles.forEach(
+            candle => {
+
+              high =
+                Math.max(
+                  high,
+                  candle.high
+                );
+
+              low =
+                Math.min(
+                  low,
+                  candle.low
+                );
+
+            }
+          );
+
+
+          /*
+            Each trading line gets
+            its own vertical space.
+          */
+
+          const zoneHeight =
+            height * 0.22;
+
+
+          const top =
+            line.zone -
+            zoneHeight / 2;
+
+
+          const bottom =
+            line.zone +
+            zoneHeight / 2;
+
+
+          /*
+            High / Low levels
+          */
+
+          drawHighLowLines(
+            line.candles,
+            top,
+            bottom
+          );
+
+
+          /*
+            Candles
+          */
+
+          line.candles.forEach(
+            candle => {
+
+              drawCandle(
+
+                candle,
+
+                line,
+
+                top,
+
+                bottom,
+
+                high,
+
+                low
+
+              );
+
+            }
+          );
+
+        }
+      );
+
+    }
+
+
+    /* =================================================
+       ANIMATION LOOP
+       ================================================= */
+
+    let previousTime = 0;
+
+    function animate(time) {
+
+      if (!previousTime) {
+
+        previousTime =
+          time;
 
       }
 
 
-      const scale =
-        getScale();
+      const delta =
+        Math.min(
+          time -
+          previousTime,
+          40
+        );
 
 
-      /*
-        Draw candles.
-      */
+      previousTime =
+        time;
 
-      candles.forEach(
-        candle => {
 
-          drawCandle(
-            candle,
-            scale
+      lines.forEach(
+        line => {
+
+          updateLine(
+            line,
+            delta
           );
 
         }
       );
 
 
+      draw();
+
+
       requestAnimationFrame(
         animate
       );
+
     }
 
 

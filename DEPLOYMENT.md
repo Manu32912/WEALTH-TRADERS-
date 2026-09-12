@@ -1,18 +1,15 @@
-# Wealth Traders deployment
+# Deployment
 
-## GitHub Pages frontend
-Upload the HTML files, `style.css`, `script.js` and `cwt-logo.jpg` to the repository root. GitHub Pages serves only the frontend.
+## Frontend (GitHub Pages)
+Upload the HTML files, `style.css`, `script.js`, and `cwt-logo.jpg` to the repository root. Keep GitHub Pages enabled.
 
-## Backend
-GitHub Pages cannot run Node.js or PostgreSQL. Deploy the `backend` folder to a Node.js host and create a PostgreSQL database. Run `schema.sql`, then set `DATABASE_URL`, `SESSION_SECRET`, `FRONTEND_ORIGIN` and `PORT`.
+## Backend authentication/database
+GitHub Pages cannot run the server-side authentication API or PostgreSQL database. Deploy the `backend` folder to a Node.js host and attach a PostgreSQL database.
 
-After deployment, set the HTTPS backend URL in `script.js` as `const API_BASE = "https://YOUR-BACKEND-DOMAIN";`.
+After deployment, edit `script.js`:
+`const API_BASE = "https://YOUR-BACKEND-DOMAIN.example.com";`
 
-## Registration
-Phone numbers are international. The form accepts a country code such as +966, +44 or +1; it does not restrict users to the UK.
+Then commit the updated script.js to GitHub.
 
-## Market ticker
-The home page requests current BTC/USDT, ETH/USDT, BNB/USDT and SOL/USDT prices from Binance's public market endpoint and refreshes every 15 seconds. If the API is unavailable, the ticker reports that the market is unavailable.
-
-## Payments
-Investment and VIP selections route to the common payment page. The payment page displays the configured BEP-20 and TRC-20 addresses. A transfer is not automatically treated as verified or paid.
+## Payment
+The payment page routes investment and VIP selections to one common page and identifies TRC20/BEP20. It intentionally does not auto-mark a payment as verified. An administrator should independently verify transfers before changing VIP status.

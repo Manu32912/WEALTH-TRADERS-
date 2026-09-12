@@ -1,0 +1,13 @@
+UPLOAD INSTRUCTIONS
+
+Upload these website files to the ROOT of the WEALTH-TRADERS- repository:
+- all .html files
+- style.css
+- script.js
+- cwt-logo.jpg
+- trading-desk-background.jpg
+
+Do NOT upload the ZIP itself and do not place these files inside another folder.
+
+The background photo is supplied as trading-desk-background.jpg and is used across the whole site.
+The old animated candle canvas is disabled.
